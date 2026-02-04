@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   useAccount,
   useSendTransaction,
@@ -20,7 +20,7 @@ import * as XLSX from "xlsx";
 
 import PixelatedButton from "@/components/PixelatedButton";
 import PixelatedCard from "@/components/PixelatedCard";
-import DisplayUsername from "@/components/DisplayUsername";
+// DisplayUsername dihapus karena hanya digunakan di leaderboard
 
 const SOMNIA_TESTNET_CHAIN_ID = 50312;
 import { abiMultiSender } from "@/contracts/abis";
@@ -29,13 +29,6 @@ const MULTISENDER_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_MULTISENDER_CONTRACT_ADDRESS as `0x${string}`;
 
 const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL;
-
-interface LeaderboardEntry {
-  _id: string;
-  walletAddress: string;
-  txCount: number;
-  totalSentWei: string;
-}
 
 type SendMode = "single" | "multi";
 type MultiSendAmountType = "per_recipient" | "total_distributed";
@@ -53,43 +46,11 @@ export default function SendPage() {
     useState<MultiSendAmountType>("per_recipient");
   const [sendMode, setSendMode] = useState<SendMode>("single");
 
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [xlsxFile, setXlsxFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    const fetchInitialLeaderboard = async () => {
-      try {
-        const response = await fetch("/api/leaderboard");
-        if (response.ok) {
-          const data = await response.json();
-          setLeaderboard(data);
-        } else {
-          console.error("Failed to fetch initial leaderboard");
-        }
-      } catch (error) {
-        console.error("Error fetching leaderboard:", error);
-      }
-    };
-    fetchInitialLeaderboard();
-
-    const eventSource = new EventSource("/api/stream");
-
-    eventSource.onmessage = (event) => {
-      const updatedLeaderboard = JSON.parse(event.data);
-      setLeaderboard(updatedLeaderboard);
-    };
-
-    eventSource.onerror = (error) => {
-      console.error("EventSource failed:", error);
-      eventSource.close();
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, []);
+  // useEffect untuk leaderboard dihapus
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -212,11 +173,7 @@ export default function SendPage() {
           { id: toastId, duration: 8000 }
         );
 
-        await fetch("/api/leaderboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ senderAddress: address, amountSent: amount }),
-        });
+        // Fetch API post ke leaderboard dihapus
 
         setRecipient("");
         setAmount("");
@@ -354,14 +311,7 @@ export default function SendPage() {
           { id: toastId, duration: 8000 }
         );
 
-        await fetch("/api/leaderboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            senderAddress: address,
-            amountSent: formatEther(totalAmountForContract),
-          }),
-        });
+        // Fetch API post ke leaderboard dihapus
 
         setMultiRecipientsList("");
         setAmount("");
@@ -395,25 +345,12 @@ export default function SendPage() {
     }
   };
 
-  const maskAddress = (addr: string) =>
-    `${addr.slice(0, 4)}...${addr.slice(-4)}`;
-
   const presetAmounts = ["0.005", "0.01", "0.1", "0.5"];
-  const formatDynamicDecimal = (weiValue: string): string => {
-    try {
-      const etherValue = formatEther(BigInt(weiValue));
-      const fixedValue = parseFloat(etherValue).toFixed(4);
-      return Number(fixedValue).toString();
-    } catch (error) {
-      console.error("Error formatting weiValue:", weiValue, error);
-      return "N/A";
-    }
-  };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 p-4 md:p-0">
+    <div className="max-w-xl mx-auto space-y-8 p-4 md:p-0">
       <h1 className="text-4xl text-center font-pixel">Send STT Tokens</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="w-full">
         <PixelatedCard>
           <h2 className="text-2xl text-center mb-4 font-pixel">Transfer</h2>
 
@@ -669,41 +606,6 @@ export default function SendPage() {
                 : "Send Multiple"}
             </PixelatedButton>
           </form>
-        </PixelatedCard>
-        <PixelatedCard>
-          <h2 className="text-2xl text-center mb-4 font-pixel">
-            🏆 Leaderboard
-          </h2>
-          <div className="space-y-1 text-sm max-h-96 pr-2 -mr-2 overflow-y-auto">
-            <div className="grid grid-cols-3 font-bold text-center border-b-2 border-black pb-2 sticky top-0 bg-stone-900/80 backdrop-blur-sm">
-              <span>Address</span>
-              <span>TXs</span>
-              <span>Total Sent</span>
-            </div>
-            {leaderboard.length > 0 ? (
-              leaderboard.map((entry, index) => (
-                <div
-                  key={entry._id}
-                  className="grid grid-cols-3 items-center text-center p-2 transition-colors hover:bg-stone-800 rounded-md"
-                >
-                  <span className="font-mono text-left">
-                    {index + 1}.{" "}
-                    <DisplayUsername
-                      address={entry.walletAddress as `0x${string}`}
-                    />
-                  </span>
-                  <span className="font-pixel">{entry.txCount}</span>
-                  <span className="font-pixel text-yellow-400">
-                    {formatDynamicDecimal(entry.totalSentWei)}
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-center col-span-3 py-4">
-                No transactions recorded yet.
-              </p>
-            )}
-          </div>
         </PixelatedCard>
       </div>
     </div>

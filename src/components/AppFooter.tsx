@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-// --- PERUBAHAN: Menambahkan import untuk ikon Admin ---
 import { FaGithub, FaXTwitter, FaUserShield, FaDiscord } from 'react-icons/fa6';
 
 type FooterLink = {
@@ -20,9 +19,8 @@ const AppFooter = () => {
     {
       title: 'Useful Links',
       links: [
-        { href: '/swap', label: 'Swap' },
         { href: '/deploy', label: 'Deploy' },
-        { href: '/send', label: 'Send' },
+        { href: '/send', label: 'Multi Send' },
         { href: '/faucet', label: 'Faucet' },
         { href: '/', label: 'Home' },
       ],
@@ -32,7 +30,6 @@ const AppFooter = () => {
       links: [
         { href: 'https://fun-quiz.fun', label: 'FunQuiz', isExternal: true },
         { href: 'https://fungive.lrmn.link', label: 'FunGive', isExternal: true },
-        { href: 'https://somfeed.lrmn.link', label: 'Somfeed', isExternal: true },
         { href: 'https://somnia.lrmn.link', label: 'More Dapps', isExternal: true },
       ],
     },
@@ -40,8 +37,8 @@ const AppFooter = () => {
 
   const socialLinks = [
     { href: 'https://github.com/lrmn7', label: 'GitHub', icon: <FaGithub /> },
-    { href: 'https://discord.com/invite/9HkKkkA9Jt', label: 'Discord', icon: <FaDiscord /> },
-    { href: 'https://x.com/romanromannya', label: 'Twitter', icon: <FaXTwitter /> },
+    { href: 'https://discord.gg/N7nGT63Ktw', label: 'Discord', icon: <FaDiscord /> },
+    { href: 'https://x.com/eleremen7', label: 'Twitter', icon: <FaXTwitter /> },
     { href: '/admin', label: 'Admin', icon: <FaUserShield /> },
   ];
 

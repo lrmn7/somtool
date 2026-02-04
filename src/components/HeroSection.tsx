@@ -28,10 +28,10 @@ const HeroSection = () => {
 
       <div className="flex justify-center gap-6">
         <Link href="/send">
-          <PixelatedButton>Send TX</PixelatedButton>
+          <PixelatedButton>MultiSend</PixelatedButton>
         </Link>
-        <Link href="/deploy">
-          <PixelatedButton>Deploy</PixelatedButton>
+        <Link href="/faucet">
+          <PixelatedButton>Faucet</PixelatedButton>
         </Link>
       </div>
     </section>
